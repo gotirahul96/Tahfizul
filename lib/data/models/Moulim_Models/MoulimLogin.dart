@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Tahfizul/util/global.dart';
 import 'package:http/http.dart' as http;
 
 class MoulimLoginModel {
@@ -46,16 +47,20 @@ class Data {
 Future<MoulimLoginModel> fetchmoulimLoginCredentials(String mobileNo,String password) async {
   print(mobileNo);
   print(password);
+  
+  // Map<String,String> header = {
+  //   'Content-Type': 'application/json; charset=UTF-8',
+  // };
   Map<String,String> credentials= {
     'mobile' : mobileNo,
     'password': password
   };
   final response = await http.post(
-      'http://167.99.155.227/api/mualemlogin',body: credentials);
-
+      Uri.parse('${Global.baseurl}/api/mualemlogin'),body: json.encode(credentials));
+  print(response.body);
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
-    print(response.body);
+    
 
     return MoulimLoginModel.fromJson(json.decode(response.body)) ;
     // print("Status OK");

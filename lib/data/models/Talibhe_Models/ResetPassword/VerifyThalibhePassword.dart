@@ -30,9 +30,9 @@ Future<VerifyThalibhePasswordChange> verifyThalibheusername(String username) asy
     'Authorization' : 'Bearer ${Global.thalibheDataBaseModel.token}',
   };
   print(token);
-  print('http://167.99.155.227/api/talibilmVerify/$username');
+  print('${Global.baseurl}/api/talibilmVerify/$username');
   final response = await http.get(
-      'http://167.99.155.227/api/talibilmVerify/$username',headers: token);
+      Uri.parse('${Global.baseurl}/api/talibilmVerify/$username'),headers: token);
   
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

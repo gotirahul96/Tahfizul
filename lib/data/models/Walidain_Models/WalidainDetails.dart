@@ -47,7 +47,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     mobile = json['mobile'];
-    image = json['image'];
+    image = json['image'] != null ? json['image'] : '';
     madarsaId = json['madarsa_id'];
     email = json['email'];
     address = json['address'];
@@ -75,7 +75,7 @@ Future<WalidainDetails> fetchWalidainDetails(int id) async {
     'Authorization' : 'Bearer ${Global.walidainDatabaseModel.token}',
   };
   
-  final response = await http.get('http://167.99.155.227/api/walidain/$id',
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/walidain/$id'),
                                    headers: token,);
       
   if (response.statusCode == 200) {

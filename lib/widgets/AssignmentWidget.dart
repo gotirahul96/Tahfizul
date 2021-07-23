@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:Tahfizul/data/models/Walidain_Models/Assignment.dart';
 import 'package:Tahfizul/util/theme.dart';
 import 'package:dio/dio.dart';
-import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ext_storage/ext_storage.dart';
 
 class Assignment extends StatefulWidget {
   final WalidainPendingAssignmentModel pendingAssignment;
@@ -105,7 +105,10 @@ class _AssignmentState extends State<Assignment>  with SingleTickerProviderState
     Directory downloadsDirectory;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      downloadsDirectory = await DownloadsPathProvider.downloadsDirectory;
+      await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOWNLOADS).then((value){
+        downloadsDirectory =  Directory(value);
+      });
+      
     } on PlatformException {
       print('Could not get the downloads directory');
     }
@@ -137,12 +140,12 @@ class _AssignmentState extends State<Assignment>  with SingleTickerProviderState
             borderRadius: BorderRadius.circular(15)
           ),
         actions: [
-         FlatButton(
+         TextButton(
           onPressed: () { 
             Navigator.of(context).pop();
            },
           child: Text('No'),),
-          FlatButton(
+          TextButton(
           onPressed: () { 
             setState(() {
               progress = 0;
@@ -275,20 +278,19 @@ pr.update(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    
              Padding(
               padding: const EdgeInsets.only(top : 5.0),
               child: GestureDetector(
                 onTap: () {
                   print('Tapped');
-                  print(widget.pendingAssignment.file);
-                  _launchURL(widget.pendingAssignment.file);
+                  print(widget.pendingAssignment.submittedFile);
+                  _launchURL(widget.pendingAssignment.submittedFile);
                 },
                 child: Icon(Icons.play_circle_outline,
                 size: 55,
                 color: widget.textColor!=null ? Color(0xffd2ebc6) : AppColors.appBarColor,),
               ),
-              ),
+            ),
                       Row(
                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -298,7 +300,7 @@ pr.update(
                            size: 30,
                           ), 
                           onPressed: (){
-                            print(widget.pendingAssignment.submittedFile);
+                            print("This is the file ${widget.pendingAssignment.submittedFile}");
                             downloadAlert(widget.pendingAssignment.submittedFile,'test');
                           }),
                           IconButton(

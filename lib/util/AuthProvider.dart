@@ -23,6 +23,11 @@ class AuthProvider {
   Future deletethalibheData ({String key = 'thalibhe'}){
     return Global.prefs.setString(key, null);
   }
+  Future deleteSharedPreference(){
+     
+      return Global.prefs.clear();
+    
+  }
   //Set data
   Future setuserType({String key = 'userType',String value}){
    return Global.prefs.setString(key, value);

@@ -33,7 +33,7 @@ Future<ResetMoulimPassword> updateMoulimPassword(String username ,String mobileN
     'Authorization' : 'Bearer ${Global.moulimDataBaseModel.token}',
   };
   final response = await http.post(
-      'http://167.99.155.227/api/mualemResetPass',body: credentials,headers: token);
+      Uri.parse('${Global.baseurl}/api/mualemResetPass'),body: credentials,headers: token);
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

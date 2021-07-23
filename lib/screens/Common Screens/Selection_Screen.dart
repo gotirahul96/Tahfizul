@@ -45,6 +45,9 @@ class Selection_ScreenState extends State<Selection_Screen> with SingleTickerPro
   @override
   Widget build(BuildContext context) {
       SizeConfig().init(context);
+      setState(() {
+          Global.isLoading = false;
+        });
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(

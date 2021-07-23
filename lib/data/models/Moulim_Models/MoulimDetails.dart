@@ -33,7 +33,7 @@ class Data {
   String about;
   int assignedNumberOfstudents;
   List<int> assignedStudentsIds;
-  double rating;
+  int rating;
   String madarsaName;
 
   Data(
@@ -52,7 +52,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     mobile = json['mobile'];
-    image = json['image'];
+    image = json['image'] != null ? json['image'] : '';
     madarsaId = json['madarsa_id'];
     email = json['email'];
     address = json['address'];
@@ -84,7 +84,7 @@ Future<MoulimDetailsModel> fetchMoulimDetails(int id) async {
   final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.moulimDataBaseModel.token}',
   };
-  final response = await http.get('http://167.99.155.227/api/mualem/$id',headers: token);
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/mualem/$id'),headers: token);
       
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

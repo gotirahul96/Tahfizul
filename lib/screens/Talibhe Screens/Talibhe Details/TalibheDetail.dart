@@ -50,7 +50,7 @@ class _TalibheDetailsState extends State<TalibheDetails> {
         _thalibheDetails = value;
         name.text = value.data.name;
         username.text = value.data.username;
-        image = value.data.image;
+        image = "https://www.tahfizulquranonline.com${value.data.image}" ;
         email.text = value.data.email;
         address.text = value.data.address;
       });
@@ -152,6 +152,8 @@ class _TalibheDetailsState extends State<TalibheDetails> {
         else {
           Toast.show(value.message, context);
         }
+      }).catchError((onError){
+        print(onError.toString());
       });
     }
     setState(() {

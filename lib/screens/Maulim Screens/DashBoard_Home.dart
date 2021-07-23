@@ -9,14 +9,13 @@ import 'package:Tahfizul/widgets/appbar_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:toast/toast.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
-import 'package:jitsi_meet/feature_flag/feature_flag_enum.dart';
 import 'package:jitsi_meet/jitsi_meet.dart';
-import 'package:jitsi_meet/jitsi_meeting_listener.dart';
 import 'package:jitsi_meet/room_name_constraint.dart';
 import 'package:jitsi_meet/room_name_constraint_type.dart';
 
@@ -31,8 +30,8 @@ class _DashBoard_HomeState extends State<DashBoard_Home> {
   MoulimTimeSlots classTimeslot = MoulimTimeSlots();
   int columnCount = 2;
   DateTime backbuttonpressedTime;
-  bool checkclass = false;
-  final serverText = 'https://meet.amtechgcc.com/';
+  
+  final serverText = 'https://meet.thedronline.com/';
   final roomText = TextEditingController(text: "plugintestroom");
   TextEditingController subjectText = TextEditingController(text: "My Plugin Test Meeting");
   TextEditingController nameText = TextEditingController(text: "Plugin Test User");
@@ -40,6 +39,8 @@ class _DashBoard_HomeState extends State<DashBoard_Home> {
   bool isAudioOnly = true;
   bool isAudioMuted = true;
   bool isVideoMuted = true;
+  var outputFormat = DateFormat('yyyy-MM-dd hh:mm a');
+  Future<MoulimTimeSlots> _moulimTimeSlot;
 
 
 
@@ -63,7 +64,7 @@ class _DashBoard_HomeState extends State<DashBoard_Home> {
         onError: _onError));
   }
   initdata(){
-    setState(() => Global.isLoading = true);
+    
     fetchMoulimDetails(Global.moulimDataBaseModel.mualemId).then((value) {
       if (value.status == true) {
         setState(() {
@@ -71,24 +72,11 @@ class _DashBoard_HomeState extends State<DashBoard_Home> {
           subjectText.text = "My Plugin Test Meeting";
    nameText.text  = Global.globalMoulimDetails.data.name;
    emailText.text = Global.globalMoulimDetails.data.email;
-        });
-      }
-    });
-    fetchMoulimTodayClassDetails(Global.moulimDataBaseModel.mualemId).then((value) {
-      setState(() => Global.isLoading = false);
-      if (value.status == true) {
-        setState(() {
-          classTimeslot = value;
-        });
-      }
-      else{
-        setState(() {
-          checkclass = true;
-        });
-        Toast.show('${value.status}', context);
-      }
 
+        });
+      }
     });
+   _moulimTimeSlot = fetchMoulimTodayClassDetails(Global.moulimDataBaseModel.mualemId);
   }
 
 
@@ -105,23 +93,24 @@ static final Map<RoomNameConstraintType, RoomNameConstraint>
     }, "Currencies characters aren't allowed in room names."),
   };
 
-  void _onConferenceWillJoin({message}) {
+  void _onConferenceWillJoin(message) {
     debugPrint("_onConferenceWillJoin broadcasted with message: $message");
   }
 
-  void _onConferenceJoined({message}) {
+  void _onConferenceJoined(message) {
     debugPrint("_onConferenceJoined broadcasted with message: $message");
   }
 
-  void _onConferenceTerminated({message}) {
+  void _onConferenceTerminated(message) {
     debugPrint("_onConferenceTerminated broadcasted with message: $message");
-      _showMyDialog('Your Class is over');
   }
 
   _onError(error) {
     debugPrint("_onError broadcasted: $error");
     _showMyDialog('Something went wrong.');
   }
+
+  
   
   Future<void> _showMyDialog(String title) async {
   return showDialog<void>(
@@ -153,9 +142,9 @@ static final Map<RoomNameConstraintType, RoomNameConstraint>
       // If feature flag are not provided, default values will be used
       // Full list of feature flags (and defaults) available in the README
       Map<FeatureFlagEnum, bool> featureFlags = {
-        FeatureFlagEnum.WELCOME_PAGE_ENABLED: false,
-      };
-
+      FeatureFlagEnum.WELCOME_PAGE_ENABLED: false,
+    };
+  
       // Here is an example, disabling features for each platform
       if (Platform.isAndroid) {
         // Disable ConnectionService usage on Android to avoid issues (see README)
@@ -164,10 +153,12 @@ static final Map<RoomNameConstraintType, RoomNameConstraint>
         // Disable PIP on iOS as it looks weird
         featureFlags[FeatureFlagEnum.PIP_ENABLED] = false;
       }
+    
+
 
       // Define meetings options here
-      var options = JitsiMeetingOptions()
-        ..room = roomText.text
+      var options = JitsiMeetingOptions(room: roomText.text)
+        
         ..serverURL = serverUrl
         ..subject = subjectText.text
         ..userDisplayName = nameText.text
@@ -180,11 +171,12 @@ static final Map<RoomNameConstraintType, RoomNameConstraint>
       debugPrint("JitsiMeetingOptions: $options");
       await JitsiMeet.joinMeeting(
         options,
-        listener: JitsiMeetingListener(onConferenceWillJoin: ({message}) {
+        listener: JitsiMeetingListener(
+          onConferenceWillJoin: (message) {
           debugPrint("${options.room} will join with message: $message");
-        }, onConferenceJoined: ({message}) {
+        }, onConferenceJoined: (message) {
           debugPrint("${options.room} joined with message: $message");
-        }, onConferenceTerminated: ({message}) {
+        }, onConferenceTerminated: (message) {
           debugPrint("${options.room} terminated with message: $message");
         }),
         // by default, plugin default constraints are used
@@ -214,9 +206,16 @@ Future<bool> onWillPop() async {
   SystemNavigator.pop();
   return true;
 }
+
+bool isCurrentDateInRange(DateTime startDate, DateTime endDate) {
+  
+  final currentDate = DateTime.now();
+  return currentDate.isAfter(startDate) && currentDate.isBefore(endDate);
+}
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    print(DateFormat.jm().format(DateTime.now()));
     return ModalProgressHUD(
         inAsyncCall: Global.isLoading,
         color: AppColors.buttonBg,
@@ -234,138 +233,142 @@ Future<bool> onWillPop() async {
                       ),
                     ),
                     floatingActionButtonLocation: FloatingActionButtonLocation.endTop,                  
-                    body: LayoutBuilder(builder: (BuildContext context,
-                        BoxConstraints viewportConstraints) {
-                      return WillPopScope(
+                    body: WillPopScope(
                         onWillPop: onWillPop,
                             child: Container(
+                            
                             width: double.infinity,
                             padding : EdgeInsets.only(left :12,right: 12),
                             child: SingleChildScrollView(
-                                child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minHeight: viewportConstraints.maxHeight,
-                                    ),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                     FutureBuilder<MoulimTimeSlots>(
-                                       future: fetchMoulimTodayClassDetails(Global.moulimDataBaseModel.mualemId),
-                                       builder: (context,snapshot){
-                                       if (snapshot.connectionState == ConnectionState.done) {
-                                         if (snapshot.data.status) {
-                                           return Stack(
-                                            children: [                                           
-                                        Column(
-                                                 mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  Container(   
-                                                    margin: EdgeInsets.only(top: 30),                                     
-                                                    child: AnimationLimiter(
-                                                      child: GridView.count(
-                                                        crossAxisCount: columnCount,
-                                                        physics: ScrollPhysics(),
-                                                        //childAspectRatio: 1.2,
-                                                        shrinkWrap: true,
-                                                        children: List.generate(
-                                                            classTimeslot.data.length,
-                                                            (index) {
-                                                          return AnimationConfiguration
-                                                              .staggeredGrid(
-                                                                position: index,                                                        
-                                                                  columnCount:  columnCount,   
-                                                                  duration: const Duration(milliseconds: 500),  
-                                                                  child: ScaleAnimation(
-                                                                      child: FadeInAnimation( 
-                                                                        child: Padding(
-                                                                         padding: EdgeInsets.all(2),
-                                                                        child: GestureDetector(
-                                                                          onTap: (){
-                                                                            _joinMeeting();
-                                                                          },
-                                                                      child: Card(                                                                                                                                 
-                                                                    elevation: 2,
-                                                                    child: Padding(
-                                                                      padding: const EdgeInsets.all(10.0),
-                                                                      child: Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Container(
-                                                                                height: 12,
-                                                                                width: 12,
-                                                                                decoration: BoxDecoration(
-                                                                                  color: classTimeslot.data[index].status == 0 ? AppColors.lightestGreyColor : 
-                                                                                  classTimeslot.data[index].status == 1 ? AppColors.orangeColor : AppColors.greenColor,
-                                                                                  shape: BoxShape.circle
-                                                                                ),
-                                                                                child: Text(' '),
-                                                                              ),
-                                                                              Center(child: Padding(
-                                                                                padding: const EdgeInsets.only(top : 8.0),
-                                                                                child: Text(classTimeslot.data[index].slotType,style: AppStyles.mediumtitleTextStyle,),
-                                                                              )),  
-                                                                              Center(
-                                                                                child: Padding(
-                                                                                  padding: EdgeInsets.only(top: 10),
-                                                                                  child: Text('${classTimeslot.data[index].startTime} TO ${classTimeslot.data[index].endTime}',
-                                                                                  style: AppStyles.greyTextStyle.copyWith(color: AppColors.mediumGreyColor,
-                                                                                  fontWeight: FontWeight.w500,fontSize: 13,)),
-                                                                                
-                                                                                ),
-                                                                              ),
-                                                                              Center(child: Padding(
-                                                                                padding: const EdgeInsets.only(top : 5.0),
-                                                                                child: Text(classTimeslot.data[index].description,
-                                                                                textAlign: TextAlign.center,
-                                                                                style: AppStyles.mediumtitleTextStyle,),
-                                                                              )),                                                                                                                               
-                                                                            ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                        ),
-                                                                      ))));
-                                                        }),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Positioned(
-                                              top: 7,
-                                              right: 0,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(2.0),
-                                                child: FloatingActionButton(
-                                                onPressed: (){},
-                                                backgroundColor: AppColors.buttonBg,
-                                                child: Icon(Icons.add,color: AppColors.whiteColor,),
-                                                ),
-                                              ),)
-                                            ],
-                                          );
-                                         }
-                                         else{
-                                           return Center(child: Text('No Records'),);
-                                         }
-                                       }
-                                       return Center(
-                                         child: SpinKitDoubleBounce(
+                                child: FutureBuilder<MoulimTimeSlots>(
+                                  future: _moulimTimeSlot,
+                                  builder: (context,snapshot){
+                                  if (snapshot.connectionState == ConnectionState.done) {
+                                    if (snapshot.data.status) {
+                                      snapshot.data.data.sort((a,b) => a.startTime.compareTo(b.endTime));
+                                      return Stack(
+                                       children: [                                           
+                                   Column(
+                                            mainAxisAlignment:
+                                       MainAxisAlignment.center,
+                                   crossAxisAlignment:
+                                       CrossAxisAlignment.center,
+                                   //mainAxisSize: MainAxisSize.max,
+                                           children: [
+                                             Container(   
+                                               margin: EdgeInsets.only(top: 30),                                     
+                                               child: AnimationLimiter(
+                                                 child: GridView.count(
+                                                   crossAxisCount: columnCount,
+                                                   physics: ScrollPhysics(),
+                                                   //childAspectRatio: 1.2,
+                                                   shrinkWrap: true,
+                                                   children: List.generate(
+                                                       snapshot.data.data.length,
+                                                       (index) {
+                                                     return AnimationConfiguration
+                                                         .staggeredGrid(
+                                                           position: index,                                                        
+                                                             columnCount:  columnCount,   
+                                                             duration: const Duration(milliseconds: 500),  
+                                                             child: ScaleAnimation(
+                                                                 child: FadeInAnimation( 
+                                                                   child: Padding(
+                                                                    padding: EdgeInsets.all(2),
+                                                                   child: GestureDetector(
+                                                                     onTap: (){
+                                                                       if (isCurrentDateInRange(DateFormat("yyyy-MM-dd hh:mm a").parse('${snapshot.data.data[index].date} ${snapshot.data.data[index].startTime}'),DateFormat("yyyy-MM-dd hh:mm a").parse('${snapshot.data.data[index].date} ${snapshot.data.data[index].endTime}'))) {
+                                                                         print('in range');
+                                                                         _joinMeeting();
+                                                                       }
+                                                                       else {
+                                                                         print('not in range');
+                                                                         Toast.show('Select TimeSlots according to the current Time.', context);
+                                                                       }
+                                                                      
+                                                                       
+                                                                     },
+                                                                 child: Card(                                                                                                                                 
+                                                               elevation: 2,
+                                                               child: Padding(
+                                                                 padding: const EdgeInsets.all(10.0),
+                                                                 child: Column(
+                                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                                                       children: [
+                                                                         Container(
+                                                                           height: 12,
+                                                                           width: 12,
+                                                                           decoration: BoxDecoration(
+                                                                             color: snapshot.data.data[index].status == 0 ? AppColors.lightestGreyColor : 
+                                                                             snapshot.data.data[index].status == 1 ? AppColors.orangeColor : AppColors.greenColor,
+                                                                             shape: BoxShape.circle
+                                                                           ),
+                                                                           child: Text(' '),
+                                                                         ),
+                                                                         Center(child: Padding(
+                                                                           padding: const EdgeInsets.only(top : 8.0),
+                                                                           child: Text(snapshot.data.data[index].slotType,style: AppStyles.mediumtitleTextStyle,),
+                                                                         )),  
+                                                                         Center(
+                                                                           child: Padding(
+                                                                             padding: EdgeInsets.only(top: 10),
+                                                                             child: Text('${snapshot.data.data[index].startTime} TO ${snapshot.data.data[index].endTime}',
+                                                                             style: AppStyles.greyTextStyle.copyWith(color: AppColors.mediumGreyColor,
+                                                                             fontWeight: FontWeight.w500,fontSize: 13,)),
+                                                                           
+                                                                           ),
+                                                                         ),
+                                                                         Center(child: Padding(
+                                                                           padding: const EdgeInsets.only(top : 5.0),
+                                                                           child: Text(snapshot.data.data[index].description,
+                                                                           textAlign: TextAlign.center,
+                                                                           style: AppStyles.mediumtitleTextStyle,),
+                                                                         )),                                                                                                                               
+                                                                       ],
+                                                                 ),
+                                                               ),
+                                                             ),
+                                                                   ),
+                                                                 ))));
+                                                   }),
+                                                 ),
+                                               ),
+                                             ),
+                                           ],
+                                         ),
+                                         Positioned(
+                                         top: 7,
+                                         right: 0,
+                                         child: Padding(
+                                           padding: const EdgeInsets.all(2.0),
+                                           child: FloatingActionButton(
+                                           onPressed: (){},
+                                           backgroundColor: AppColors.buttonBg,
+                                           child: Icon(Icons.add,color: AppColors.whiteColor,),
+                                           ),
+                                         ),)
+                                       ],
+                                     );
+                                    }
+                                    else{
+                                      return Container(
+                                    
+                                       height: SizeConfig.blockSizeVertical * 80,
+                                        child: Center(child: Text('No Records'),),
+                                      );
+                                    }
+                                  }
+                                  return Container(
+                                    height: SizeConfig.blockSizeVertical * 80,
+                                    child: Center(
+                                      child: SpinKitDoubleBounce(
                         color: AppColors.appBarColor,
                         size: 70.0,
                       ),
-                                       );
-                                     })    
-                                        ])))),
-                      );
-                    })))));
+                                    ),
+                                  );
+                                }))),
+                      )
+                    ))));
   }
 }

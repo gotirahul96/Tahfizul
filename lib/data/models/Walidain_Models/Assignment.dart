@@ -122,7 +122,7 @@ Future<WalidainAssignment> fetchWalidainAssignemnt(int id) async {
   final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.walidainDatabaseModel.token}',
   };
-  final response = await http.get('http://167.99.155.227/api/assignment/walidain/$id',headers: token);
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/assignment/walidain/$id'),headers: token);
       
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
@@ -140,8 +140,8 @@ Future<WalidainAssignment> fetchThalibheAssignemnt(int id) async {
   final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.thalibheDataBaseModel.token}',
   };
-  final response = await http.get('http://167.99.155.227/api/assignment/talibilm/$id',headers: token);
-      
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/assignment/talibilm/$id'),headers: token);
+      print(response.body);
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
     print(response.body);

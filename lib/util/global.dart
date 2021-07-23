@@ -15,6 +15,7 @@ import 'package:Tahfizul/services/WalidainDataBaseModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Global {
+  static String baseurl = 'https://www.tahfizulquranonline.com';
   static bool isLoading = false;
   static String token = '';
   static bool walidainLoginSave = false;

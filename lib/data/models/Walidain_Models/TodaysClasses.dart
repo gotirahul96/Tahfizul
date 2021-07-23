@@ -36,6 +36,7 @@ class Data {
   int mualemId;
   String description;
   int status;
+  String date;
   int manageTimeId;
   int timeSlotId;
   String startTime;
@@ -46,6 +47,7 @@ class Data {
       {this.id,
       this.madarsaId,
       this.mualemId,
+      this.date,
       this.description,
       this.status,
       this.manageTimeId,
@@ -60,6 +62,7 @@ class Data {
     mualemId = json['mualem_id'];
     description = json['description'];
     status = json['status'];
+    date = json['date'];
     manageTimeId = json['manage_time_id'];
     timeSlotId = json['time_slot_id'];
     startTime = json['start_time'];
@@ -74,6 +77,7 @@ class Data {
     data['mualem_id'] = this.mualemId;
     data['description'] = this.description;
     data['status'] = this.status;
+    data['date'] = this.date;
     data['manage_time_id'] = this.manageTimeId;
     data['time_slot_id'] = this.timeSlotId;
     data['start_time'] = this.startTime;
@@ -89,7 +93,7 @@ Future<TodayClasses> fetchTodayClassDetails(int id) async {
     'Authorization' : 'Bearer ${Global.walidainDatabaseModel.token}',
   };
   
-  final response = await http.get('http://167.99.155.227/api/class/$id',
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/class/$id'),
                                    headers: token,);
       
   if (response.statusCode == 200) {
@@ -111,7 +115,7 @@ Future<TodayClasses> fetchThalibheTodayClassDetails(int id) async {
     'Authorization' : 'Bearer ${Global.thalibheDataBaseModel.token}',
   };
   print(token);
-  final response = await http.get('http://167.99.155.227/api/class/$id',
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/class/$id'),
                                    headers: token,);
       
   if (response.statusCode == 200) {

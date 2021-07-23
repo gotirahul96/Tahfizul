@@ -34,7 +34,7 @@ Future<ResetWalidainPassword> updateThalibhePassword(String username, String ema
     'Authorization' : 'Bearer ${Global.thalibheDataBaseModel.token}',
   };
   final response = await http.post(
-      'http://167.99.155.227/api/talibilmResetPass/',body: credentials,headers: token);
+      Uri.parse('${Global.baseurl}/api/talibilmResetPass/'),body: credentials,headers: token);
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

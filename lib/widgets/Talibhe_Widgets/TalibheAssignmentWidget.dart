@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:downloads_path_provider/downloads_path_provider.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:Tahfizul/data/models/Walidain_Models/Assignment.dart';
@@ -103,7 +103,9 @@ class _Talibhe_AssignmentState extends State<Talibhe_Assignment>  with SingleTic
     Directory downloadsDirectory;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      downloadsDirectory = await DownloadsPathProvider.downloadsDirectory;
+      await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOWNLOADS).then((value){
+        downloadsDirectory =  Directory(value);
+      });
     } on PlatformException {
       print('Could not get the downloads directory');
     }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Tahfizul/util/global.dart';
 import 'package:http/http.dart' as http;
  
 class GetCityModel {
@@ -72,7 +73,7 @@ class Data {
 }
 Future<GetCityModel> getCountryName(int cityid) async {
   
-  final response = await http.get('http://167.99.155.227/master_management/city/$cityid');
+  final response = await http.get(Uri.parse('${Global.baseurl}/master_management/city/$cityid'));
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
     print(response.body);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Tahfizul/util/global.dart';
 import 'package:http/http.dart' as http;
 
 class ThalibLoginModel {
@@ -50,12 +51,12 @@ Future<ThalibLoginModel> fetchThalibLoginCredentials(String userName,String pass
     'username' : userName,
     'password': password
   };
-  final response = await http.post('http://167.99.155.227/api/talibilmlogin',
-                                   body: credentials);
-      
+  final response = await http.post(Uri.parse('${Global.baseurl}/api/talibilmlogin'),
+                                   body: json.encode(credentials));
+      print(response.body);
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
-    print(response.body);
+    
 
     return ThalibLoginModel.fromJson(json.decode(response.body)) ;
     // print("Status OK");

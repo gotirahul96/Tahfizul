@@ -34,7 +34,7 @@ Future<ResetWalidainPassword> updateWalidainPassword(String username ,String pas
     'Authorization' : 'Bearer ${Global.walidainDatabaseModel.token}',
   };
   final response = await http.post(
-      'http://167.99.155.227/api/walidainResetPass/$mobileno',body: credentials,headers: token);
+      Uri.parse('${Global.baseurl}/api/walidainResetPass/$mobileno'),body: credentials,headers: token);
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

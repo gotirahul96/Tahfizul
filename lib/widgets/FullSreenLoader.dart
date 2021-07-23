@@ -6,7 +6,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 void showWait(context , Color loaderColor ) {
     showDialog(
         context: context,
-        child: BackdropFilter(
+         builder: (BuildContext context) { 
+           return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
             child: WillPopScope(
                 onWillPop: () async => false,
@@ -36,5 +37,6 @@ void showWait(context , Color loaderColor ) {
                   ),
                 ),
               ),
-            )));
+            ));
+          });
   }

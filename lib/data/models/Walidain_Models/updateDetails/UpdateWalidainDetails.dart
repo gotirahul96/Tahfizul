@@ -30,7 +30,7 @@ Future<UpdateWalidainDetails>  uploadwalidainFileFromDio(String username,int id,
   print(id);
     var dio = new Dio();
      FormData formdata;
-    dio.options.baseUrl = 'http://167.99.155.227/';
+    dio.options.baseUrl = '${Global.baseurl}/';
     final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.walidainDatabaseModel.token}',
   };
@@ -54,7 +54,7 @@ Future<UpdateWalidainDetails>  uploadwalidainFileFromDio(String username,int id,
    });
  }
     var response = await dio.post("api/walidainUpdate/$id",
-        data: formdata,
+        data: json.encode(formdata),
         options: Options(
             method: 'POST',
             responseType: ResponseType.plain // or ResponseType.JSON

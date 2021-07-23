@@ -121,11 +121,11 @@ Future<MoulimAssignment> fetchMoulimAssignemnt(int id) async {
   final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.moulimDataBaseModel.token}',
   };
-  final response = await http.get('http://167.99.155.227/api/assignment/mualem/$id',headers: token);
-      
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/assignment/mualem/$id'),headers: token);
+      print(response.body);
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
-    print(response.body);
+    
 
     return MoulimAssignment.fromJson(json.decode(response.body)) ;
     // print("Status OK");

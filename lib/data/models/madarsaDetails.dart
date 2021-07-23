@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Tahfizul/util/global.dart';
 import 'package:http/http.dart' as http;
 
 class MadarsaDetails {
@@ -93,7 +94,7 @@ class Data {
 
 Future<MadarsaDetails> madarsaDetails(int id) async {
   
-  final response = await http.get('http://167.99.155.227/madarsa_management/madarsa/$id');
+  final response = await http.get(Uri.parse('${Global.baseurl}/madarsa_management/madarsa/$id'));
       
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

@@ -21,19 +21,20 @@ class CompletedAssignmentScreen extends StatefulWidget {
 class _CompletedAssignmentScreenState extends State<CompletedAssignmentScreen> {
     MoulimAssignment _assignment = MoulimAssignment();
   List<WalidainPendingAssignmentModel> totalAssignment = [];
-  List<WalidainPendingAssignmentModel> filteredPendingAssignment = [];
+  List<WalidainPendingAssignmentModel> filteredCompletedAssignment = [];
   
   String checkdata ;
   @override
   void initState() {
     super.initState();
-    setState(() => Global.isLoading = true);
+    
     initData();
   }
  
 
+  
    initData(){
-    
+    setState(() => Global.isLoading = true);
     Global.globalMoulimDetails.data.assignedStudentsIds.forEach((element) { 
     fetchMoulimAssignemnt(element).then((value) {
      if (value.status == true) {
@@ -41,6 +42,7 @@ class _CompletedAssignmentScreenState extends State<CompletedAssignmentScreen> {
         _assignment = value;
      });
      value.data.forEach((element) { 
+       print(element.submittedFile);
        var a = WalidainPendingAssignmentModel(
            id:  element.id,
            madarsaId: element.madarsaId,
@@ -65,17 +67,24 @@ class _CompletedAssignmentScreenState extends State<CompletedAssignmentScreen> {
        totalAssignment.add(a);
      });
      setState(() {
-       filteredPendingAssignment = totalAssignment.where((element) => element.status.contains('Completed') ).toList();
+       filteredCompletedAssignment = totalAssignment.where((element) => element.status.contains('Completed') ).toList();
      });
+    //  filteredCompletedAssignment.forEach((element) {
+    //    print(element.name);
+    //   });
      }
-     else{
-       setState(() {
-         checkdata = 'No Records';
-       });
-     }
+     
+     
     });
-    setState(() => Global.isLoading = false);
     });
+    print(filteredCompletedAssignment.length);
+    print(filteredCompletedAssignment.isEmpty);
+    // if (filteredCompletedAssignment.isEmpty){
+    //    setState(() {
+    //      checkdata = "No recordsss";
+    //    });
+    //  }
+     setState(() => Global.isLoading = false);
   }
  
 
@@ -112,7 +121,7 @@ class _CompletedAssignmentScreenState extends State<CompletedAssignmentScreen> {
                                           CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
-                                   filteredPendingAssignment.isEmpty? Center(
+                                   filteredCompletedAssignment.isEmpty? Center(
                                      child: SpinKitDoubleBounce(
                                                color: AppColors.appBarColor,
                                                size: 70.0,
@@ -141,9 +150,9 @@ class _CompletedAssignmentScreenState extends State<CompletedAssignmentScreen> {
                                             child: ListView.builder(
                                               shrinkWrap: true,
                                               physics: NeverScrollableScrollPhysics(),
-                                              itemCount: filteredPendingAssignment.length,
+                                              itemCount: filteredCompletedAssignment.length,
                                               itemBuilder: (BuildContext context , index){
-                                              return Assignment(pendingAssignment: filteredPendingAssignment[index],
+                                              return Assignment(pendingAssignment: filteredCompletedAssignment[index],
                                               bgColor: AppColors.appBarColor,
                                               textColor: AppColors.whiteColor,
                                               );

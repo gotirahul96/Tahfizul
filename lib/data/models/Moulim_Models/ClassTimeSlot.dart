@@ -7,16 +7,16 @@ import 'package:http/http.dart' as http;
 
 class MoulimTimeSlots {
   bool status;
-  List<Data> data;
+  List<MoulimTimeSlotsData> data;
 
   MoulimTimeSlots({this.status, this.data});
 
   MoulimTimeSlots.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
-      data = new List<Data>();
+      data = new List<MoulimTimeSlotsData>();
       json['data'].forEach((v) {
-        data.add(new Data.fromJson(v));
+        data.add(new MoulimTimeSlotsData.fromJson(v));
       });
     }
   }
@@ -31,7 +31,7 @@ class MoulimTimeSlots {
   }
 }
 
-class Data {
+class MoulimTimeSlotsData {
   int id;
   int madarsaId;
   int talibIlmId;
@@ -39,27 +39,30 @@ class Data {
   int status;
   int manageTimeId;
   int timeSlotId;
+  String date;
   String startTime;
   String endTime;
   String slotType;
 
-  Data(
+  MoulimTimeSlotsData(
       {this.id,
       this.madarsaId,
       this.talibIlmId,
       this.description,
       this.status,
+      this.date,
       this.manageTimeId,
       this.timeSlotId,
       this.startTime,
       this.endTime,
       this.slotType});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  MoulimTimeSlotsData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     madarsaId = json['madarsa_id'];
     talibIlmId = json['talib_ilm_id'];
     description = json['description'];
+    date = json['date'];
     status = json['status'];
     manageTimeId = json['manage_time_id'];
     timeSlotId = json['time_slot_id'];
@@ -75,6 +78,7 @@ class Data {
     data['talib_ilm_id'] = this.talibIlmId;
     data['description'] = this.description;
     data['status'] = this.status;
+    data['date'] = this.date;
     data['manage_time_id'] = this.manageTimeId;
     data['time_slot_id'] = this.timeSlotId;
     data['start_time'] = this.startTime;
@@ -89,9 +93,9 @@ Future<MoulimTimeSlots> fetchMoulimTodayClassDetails(int id) async {
     'Authorization' : 'Bearer ${Global.moulimDataBaseModel.token}',
   };
   
-  final response = await http.get('http://167.99.155.227/api/mualemclass/$id',
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/mualemclass/$id'),
                                    headers: token,);
-      
+      print(response.body);
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
     print(response.body);

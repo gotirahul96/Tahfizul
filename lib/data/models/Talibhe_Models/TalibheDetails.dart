@@ -41,7 +41,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     username = json['username'];
-    image = json['image'];
+    image = json['image'] != null ? json['image'] : '';
     madarsaId = json['madarsa_id'];
     email = json['email'];
     address = json['address'];
@@ -63,7 +63,7 @@ Future<ThalibheDetails> fetchthalibheDetails(int id) async {
   final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.thalibheDataBaseModel.token}',
   };
-  final response = await http.get('http://167.99.155.227/api/talibilm/$id',headers: token);
+  final response = await http.get(Uri.parse('${Global.baseurl}/api/talibilm/$id'),headers: token);
       
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

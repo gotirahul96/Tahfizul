@@ -65,7 +65,7 @@ class _Talibhe_Pending_AssignmentState extends State<Talibhe_Pending_Assignment>
        filteredPendingAssignment = totalAssignment.where((element) => element.status.contains('Pending') ).toList();
      });
      }
-     else{
+     if (filteredPendingAssignment.isEmpty){
        Toast.show('No Records', context);
      }
     

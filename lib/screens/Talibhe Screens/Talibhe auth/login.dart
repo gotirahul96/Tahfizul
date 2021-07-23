@@ -75,6 +75,7 @@ class _TalibheLoginState extends State<TalibheLogin> {
 
   @override
   Widget build(BuildContext context) {
+    
     SizeConfig().init(context);
     return ModalProgressHUD(
       inAsyncCall: Global.isLoading,
@@ -127,7 +128,7 @@ class _TalibheLoginState extends State<TalibheLogin> {
                                         textInputType: TextInputType.text,
                                         textInputFormatter: [
                                           new FilteringTextInputFormatter.allow(
-                                              RegExp("[a-z A-Z]")),
+                                              RegExp("[a-z A-Z .]")),
                                         ],
                                         prefixicon: Icons.person),
                                     Padding(

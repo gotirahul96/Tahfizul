@@ -30,13 +30,14 @@ class UpdateThalibDetails {
 Future<UpdateThalibDetails>  uploadThalibFileFromDio(String username,int id, File photoFile) async {
     var dio = new Dio();
      FormData formdata;
-    dio.options.baseUrl = 'http://167.99.155.227/';
+    dio.options.baseUrl = '${Global.baseurl}/';
     final Map<String,String> token= {
+      'Content-Type': 'application/json; charset=UTF-8',
     'Authorization' : 'Bearer ${Global.thalibheDataBaseModel.token}',
   };
-    dio.options.connectTimeout = 5000; //5s
-    dio.options.receiveTimeout = 5000;
-    dio.options.headers = token;
+    dio.options.connectTimeout = 20000; //5s
+    dio.options.receiveTimeout = 20000;
+    //dio.options.headers = token;
    
     if (photoFile != null &&
         photoFile.path != null &&
@@ -53,12 +54,28 @@ Future<UpdateThalibDetails>  uploadThalibFileFromDio(String username,int id, Fil
       ),
    });
  }
-    var response = await dio.post("api/talibilmUpdate/$id",
-        data: formdata,
+ else {
+   formdata = FormData.fromMap({
+    'e_username' : username,
+   });
+ }
+ print(formdata.fields);
+    try {
+      var response = await dio.post("api/talibilmUpdate/$id",
+        data: jsonEncode(formdata),
         options: Options(
             method: 'POST',
+            headers: {
+    HttpHeaders.contentTypeHeader: "application/json",
+    HttpHeaders.authorizationHeader : 'Bearer ${Global.thalibheDataBaseModel.token}'
+  },
+            followRedirects: false,
+            // will not throw errors
+            validateStatus: (status) => true,
+            //contentType: 'multipart/form-data',
             responseType: ResponseType.plain // or ResponseType.JSON
             ));
+                     print(response.data);
     if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON
     return UpdateThalibDetails.fromJson(json.decode(response.data));
@@ -68,4 +85,12 @@ Future<UpdateThalibDetails>  uploadThalibFileFromDio(String username,int id, Fil
     print(response.statusCode);
     throw Exception('Failed to load post');
   }
+    } catch (e) {
+
+    if (e is DioError) {
+    //handle DioError here by error type or by error code
+         print(e);
+    } 
+ //return empty list (you can also return custom error to be handled by Future Builder)
+}
   }

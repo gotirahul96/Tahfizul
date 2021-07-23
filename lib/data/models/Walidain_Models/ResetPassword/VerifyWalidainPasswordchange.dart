@@ -30,7 +30,7 @@ Future<VerifyWalidainPasswordChange> verifyWalidainMobile(String mobileNo) async
     'Authorization' : 'Bearer ${Global.walidainDatabaseModel.token}',
   };
   final response = await http.get(
-      'http://167.99.155.227/api/walidainVerify/$mobileNo',headers: token);
+      Uri.parse('${Global.baseurl}/api/walidainVerify/$mobileNo'),headers: token);
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

@@ -9,13 +9,12 @@ import 'package:Tahfizul/widgets/appbar_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:toast/toast.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
-import 'package:jitsi_meet/feature_flag/feature_flag_enum.dart';
 import 'package:jitsi_meet/jitsi_meet.dart';
-import 'package:jitsi_meet/jitsi_meeting_listener.dart';
 import 'package:jitsi_meet/room_name_constraint.dart';
 import 'package:jitsi_meet/room_name_constraint_type.dart';
 
@@ -29,7 +28,7 @@ class TalibheDashBoard extends StatefulWidget {
 class _TalibheDashBoardState extends State<TalibheDashBoard> {
   DateTime backbuttonpressedTime;
   TodayClasses classTimeslot ;
-  final serverText = 'https://meet.amtechgcc.com/';
+  final serverText = 'https://meet.thedronline.com/';
   TextEditingController roomText = TextEditingController(text: "plugintestroom");
   TextEditingController subjectText = TextEditingController(text: "My Plugin Test Meeting");
   TextEditingController nameText = TextEditingController(text: "Plugin Test User");
@@ -59,7 +58,6 @@ class _TalibheDashBoardState extends State<TalibheDashBoard> {
   }
 
   
-   
    static final Map<RoomNameConstraintType, RoomNameConstraint>
       customContraints = {
     RoomNameConstraintType.MAX_LENGTH: new RoomNameConstraint((value) {
@@ -72,24 +70,21 @@ class _TalibheDashBoardState extends State<TalibheDashBoard> {
     }, "Currencies characters aren't allowed in room names."),
   };
 
-  void _onConferenceWillJoin({message}) {
+  void _onConferenceWillJoin(message) {
     debugPrint("_onConferenceWillJoin broadcasted with message: $message");
   }
 
-  void _onConferenceJoined({message}) {
+  void _onConferenceJoined(message) {
     debugPrint("_onConferenceJoined broadcasted with message: $message");
   }
 
-  void _onConferenceTerminated({message}) {
-     _showMyDialog('Your Class is over');
+  void _onConferenceTerminated(message) {
     debugPrint("_onConferenceTerminated broadcasted with message: $message");
-   
   }
 
   _onError(error) {
-      _showMyDialog('Something went wrong');
     debugPrint("_onError broadcasted: $error");
-  
+    _showMyDialog('Something went wrong.');
   }
 
   
@@ -117,8 +112,7 @@ class _TalibheDashBoardState extends State<TalibheDashBoard> {
       }
 
       // Define meetings options here
-      var options = JitsiMeetingOptions()
-        ..room = roomText.text
+      var options = JitsiMeetingOptions(room: roomText.text)
         ..serverURL = serverUrl
         ..subject = subjectText.text
         ..userDisplayName = nameText.text
@@ -131,11 +125,11 @@ class _TalibheDashBoardState extends State<TalibheDashBoard> {
       debugPrint("JitsiMeetingOptions: $options");
       await JitsiMeet.joinMeeting(
         options,
-        listener: JitsiMeetingListener(onConferenceWillJoin: ({message}) {
+        listener: JitsiMeetingListener(onConferenceWillJoin: (message) {
           debugPrint("${options.room} will join with message: $message");
-        }, onConferenceJoined: ({message}) {
+        }, onConferenceJoined: (message) {
           debugPrint("${options.room} joined with message: $message");
-        }, onConferenceTerminated: ({message}) {
+        }, onConferenceTerminated: (message) {
          
           debugPrint("${options.room} terminated with message: $message");
          
@@ -199,6 +193,12 @@ class _TalibheDashBoardState extends State<TalibheDashBoard> {
   SystemNavigator.pop();
   return true;
 }
+
+bool isCurrentDateInRange(DateTime startDate, DateTime endDate) {
+  
+  final currentDate = DateTime.now();
+  return currentDate.isAfter(startDate) && currentDate.isBefore(endDate);
+}
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -228,74 +228,75 @@ class _TalibheDashBoardState extends State<TalibheDashBoard> {
                 padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                   width: double.infinity,
                   child: SingleChildScrollView(
-                      child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: viewportConstraints.maxHeight,
-                          ),
+                      child: FutureBuilder<TodayClasses>(
+                        future: fetchThalibheTodayClassDetails(Global.thalibheDataBaseModel.talibIlmId),                                 
+                        builder: ( context,  snapshot) {
+                       if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.data.status == true) {
+                              return Container(
+                                height: SizeConfig.safeScreenHeight,
+                                child: Padding(
+                                  padding:  EdgeInsets.only(bottom : 65.0),
+                                  child: ListView.builder(
+                           shrinkWrap: true,
+                           
+                           itemCount: snapshot.data.data.length,
+                           itemBuilder: (BuildContext context,index)
+                           {
+                             snapshot.data.data.sort((a,b) => a.startTime.compareTo(b.endTime));
+                          return Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: RaisedButton(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        onPressed: () {                       
+                          
+                            if (isCurrentDateInRange(DateFormat("yyyy-MM-dd hh:mm a").parse('${snapshot.data.data[index].date} ${snapshot.data.data[index].startTime}'),DateFormat("yyyy-MM-dd hh:mm a").parse('${snapshot.data.data[index].date} ${snapshot.data.data[index].endTime}'))) {
+                                                                   print('in range');
+                                                                   _joinMeeting();
+                                                                 }
+                                                                 else {
+                                                                   print('not in range');
+                                                                   Toast.show('Select TimeSlots according to the current Time.', context);
+                                                                 }
+                        },
+                        color: AppColors.whiteColor,
+                         shape: StadiumBorder(),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [                           
-                                FutureBuilder<TodayClasses>(
-                                  future: fetchThalibheTodayClassDetails(Global.thalibheDataBaseModel.talibIlmId),                                 
-                                  builder: ( context,  snapshot) {
-                                 if (snapshot.connectionState == ConnectionState.done) {
-                                      if (snapshot.data.status == true) {
-                                        return ListView.builder(
-                               shrinkWrap: true,
-                               itemCount: snapshot.data.data.length,
-                               itemBuilder: (BuildContext context,index)
-                               => Container(
-                                margin: EdgeInsets.only(top: 20),
-                                child: RaisedButton(
-                                  padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
-                                  onPressed: () {                                   
-                                     _joinMeeting();                                       
-                                  },
-                                  color: AppColors.whiteColor,
-                                   shape: StadiumBorder(),
-                                    child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text('${snapshot.data.data[index].slotType}',
-                                      style: AppStyles.greenTextStyle.copyWith(
-                                       fontSize: 20,
-                                       fontWeight: FontWeight.w500),),
-                                      Padding(
-                                       padding: EdgeInsets.only(top: 10),
-                                       child: Text('${snapshot.data.data[index].startTime} TO ${snapshot.data.data[index].endTime}',
-                                       style: AppStyles.greyTextStyle.copyWith(
-                                       color: index == 0 ? Colors.blue : AppColors.mediumGreyColor,
-                                       fontWeight: FontWeight.w500
-                                       ),
-                                       ),
-                                       )
-                                    ],
-                                  ),
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('${snapshot.data.data[index].slotType}',
+                            style: AppStyles.greenTextStyle.copyWith(
+                             fontSize: 20,
+                             fontWeight: FontWeight.w500),),
+                            Padding(
+                             padding: EdgeInsets.only(top: 10),
+                             child: Text('${snapshot.data.data[index].startTime} TO ${snapshot.data.data[index].endTime}',
+                             style: AppStyles.greyTextStyle.copyWith(
+                             color: isCurrentDateInRange(DateFormat("yyyy-MM-dd hh:mm a").parse('${snapshot.data.data[index].date} ${snapshot.data.data[index].startTime}'),DateFormat("yyyy-MM-dd hh:mm a").parse('${snapshot.data.data[index].date} ${snapshot.data.data[index].endTime}')) ? Colors.blue : AppColors.mediumGreyColor,
+                             fontWeight: FontWeight.w500
+                             ),
+                             ),
+                             )
+                          ],
+                        ),
+                      ),
+                       );}),
                                 ),
-                                 ));
-                              }else{
-                                        return Container(
-                                          child: Text('No Records',style: AppStyles.blackTextStyle,),
-                                        );
-                                      }
-                              }
-                                    return Center(
-                                         child: SpinKitDoubleBounce(
-                                  color: AppColors.talibheappbarColor,
-                                  size: 70.0,
-                                 ),
-                                );
-                                  },
-                                ),
-                              
-                             
-                              //  Padding(
-                              //    padding: const EdgeInsets.only(top : 20.0),
-                              //    child: Text('Announcements',style: AppStyles.whiteTextStyle.copyWith(fontSize: 22),),
-                              //  )
-                            ])))),
+                              );
+                          }else{
+                              return Container(
+                                child: Text('No Records',style: AppStyles.blackTextStyle,),
+                              );
+                            }
+                          }
+                          return Center(
+                               child: SpinKitDoubleBounce(
+                        color: AppColors.talibheappbarColor,
+                        size: 70.0,
+                       ),
+                      );
+                        },
+                      ))),
             );}))))
     );
   }

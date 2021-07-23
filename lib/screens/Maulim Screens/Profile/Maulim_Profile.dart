@@ -57,7 +57,7 @@ class _Maulim_ProfileState extends State<Maulim_Profile> {
          about.text = value.data.about;
          name.text = value.data.name;
          address.text = value.data.address;
-        setState(() =>  rating = value.data.rating);
+        setState(() =>  rating = double.parse(value.data.rating.toString()));
          image = value.data.image;
         });
        }
@@ -232,7 +232,7 @@ class _Maulim_ProfileState extends State<Maulim_Profile> {
                                           decoration: BoxDecoration(
                                               borderRadius: BorderRadius.all(Radius.circular(45)),
                                                 image: DecorationImage(
-                                                    image: NetworkImage(image),
+                                                    image: NetworkImage('https://www.tahfizulquranonline.com$image'),
                                                     fit: BoxFit.cover)),
                                           child: Text(' '),
                                         ) :   Container(
@@ -280,13 +280,21 @@ class _Maulim_ProfileState extends State<Maulim_Profile> {
    allowHalfRating: true,
    itemCount: 5,
    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-   itemBuilder: (context, _) => Icon(
-     Icons.star,
-     color: AppColors.appBarColor,
-   ),
+   
    onRatingUpdate: (rating) {
      print(rating);
-   },
+   }, ratingWidget: RatingWidget(full: 
+   Icon(
+     Icons.star,
+     color: AppColors.appBarColor,
+   )
+   , half: Icon(
+     Icons.star_half,
+     color: AppColors.appBarColor,
+   ), empty: Icon(
+     Icons.star_border,
+     color: AppColors.appBarColor,
+   )),
 ),
                                                    
                                                     Divider(color: AppColors.greyColor,),

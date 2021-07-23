@@ -25,7 +25,7 @@ class UpdateMoulimDetails {
 Future<UpdateMoulimDetails>  uploadmoulimFileFromDio(String username,int id, File photoFile) async {
     var dio = new Dio();
      FormData formdata;
-    dio.options.baseUrl = 'http://167.99.155.227/';
+    dio.options.baseUrl = '${Global.baseurl}/';
     final Map<String,String> token= {
     'Authorization' : 'Bearer ${Global.moulimDataBaseModel.token}',
   };

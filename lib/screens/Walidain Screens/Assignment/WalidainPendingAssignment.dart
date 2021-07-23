@@ -38,6 +38,7 @@ class _WalidainPendingAssignmentState extends State<WalidainPendingAssignment> {
     Global.globalWalidainDetails.data.studentsIds.forEach((element) {    
        
     fetchWalidainAssignemnt(element).then((value) {
+      print(value.status);
      if (value.status == true) {
         _assignment = value;
      value.data.forEach((element) { 
@@ -69,13 +70,16 @@ class _WalidainPendingAssignmentState extends State<WalidainPendingAssignment> {
      setState(() {
        filteredPendingAssignment = totalAssignment.where((element) => element.status.contains('Pending') ).toList();
      });
+     setState(() {
+            
+          });
      }
-     else{
-       Toast.show('No Records', context);
-       setState(() {
-         checkdata = 'No Records';
-       });
-     }
+    //  else{
+    //    Toast.show('No Records', context);
+    //    setState(() {
+    //      checkdata = 'No Records';
+    //    });
+    //  }
      
     });
     });
@@ -87,8 +91,8 @@ class _WalidainPendingAssignmentState extends State<WalidainPendingAssignment> {
   
   void showWait(context) {
     showDialog(
-        context: context,
-        child: BackdropFilter(
+        context: context, builder: (BuildContext context) { 
+          return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
             child: WillPopScope(
                 onWillPop: () async => false,
@@ -118,7 +122,9 @@ class _WalidainPendingAssignmentState extends State<WalidainPendingAssignment> {
                   ),
                 ),
               ),
-            )));
+            ));
+         },
+         );
   }
   @override
   Widget build(BuildContext context) {

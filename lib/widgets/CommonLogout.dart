@@ -34,11 +34,13 @@ import 'package:flutter/material.dart';
               ),
               onPressed: () async {
                 Navigator.of(context).pop();
-                authProvider.deleteUserType();
-                authProvider.deletemoulimData();
-                authProvider.deletethalibheData();
-                authProvider.deletewalidainData();
-                Navigator.of(context).popAndPushNamed('selection_screen');
+                // authProvider.deleteUserType();
+                // authProvider.deletemoulimData();
+                // authProvider.deletethalibheData();
+                // authProvider.deletewalidainData();
+                authProvider.deleteSharedPreference().then((value) {
+                  Navigator.of(context).popAndPushNamed('selection_screen');
+                });
               },
             ),
           ],

@@ -31,7 +31,7 @@ Future<VerifyMoulimPasswordChange> verifyMoulimMobile(String mobileNo) async {
   };
   
   final response = await http.get(
-      'http://167.99.155.227/api/mualemVerify/$mobileNo',headers: token);
+      Uri.parse('${Global.baseurl}/api/mualemVerify/$mobileNo'),headers: token);
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON

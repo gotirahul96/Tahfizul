@@ -27,7 +27,7 @@ class _WalidainNavDrawerState extends State<WalidainNavDrawer> {
                 children: [
                   Global.globalWalidainDetails.data.image.isNotEmpty ? ClipRRect(
                                                   borderRadius: BorderRadius.circular(45),
-                                                child : Image.network(Global.globalWalidainDetails.data.image,height: 90,fit: BoxFit.cover,
+                                                child : Image.network('https://www.tahfizulquranonline.com${Global.globalWalidainDetails.data.image}',height: 90,fit: BoxFit.cover,
                                                 width: 90,)
                                               ): Container(
                     child: Image.asset(

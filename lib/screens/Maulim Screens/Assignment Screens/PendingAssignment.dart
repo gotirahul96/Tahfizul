@@ -20,7 +20,7 @@ class PendingAssignmentScreen extends StatefulWidget {
 
 class _PendingAssignmentScreenState extends State<PendingAssignmentScreen> {
 
-   MoulimAssignment _assignment = MoulimAssignment();
+  //MoulimAssignment _assignment = MoulimAssignment();
   List<WalidainPendingAssignmentModel> totalAssignment = [];
   List<WalidainPendingAssignmentModel> filteredPendingAssignment = [];
   String checkstatus;
@@ -36,9 +36,9 @@ class _PendingAssignmentScreenState extends State<PendingAssignmentScreen> {
     Global.globalMoulimDetails.data.assignedStudentsIds.forEach((element) { 
     fetchMoulimAssignemnt(element).then((value) {
      if (value.status == true) {
-       setState(() {
-        _assignment = value;
-     });
+    //    setState(() {
+    //     _assignment = value;
+    //  });
      value.data.forEach((element) { 
        print(element.submittedFile);
        var a = WalidainPendingAssignmentModel(
@@ -67,13 +67,21 @@ class _PendingAssignmentScreenState extends State<PendingAssignmentScreen> {
      setState(() {
        filteredPendingAssignment = totalAssignment.where((element) => element.status.contains('Pending') ).toList();
      });
+     filteredPendingAssignment.forEach((element) {
+       print(element.name);
+      });
      }
-     else{
-       setState(() {
-         checkstatus = "No records";
-       });
-     }
+     setState(() {
+            
+          });
+     
     });
+    // if (filteredPendingAssignment.isEmpty){
+    //    setState(() {
+    //      checkstatus = "No recordsss";
+    //    });
+    //    print('this is executed');
+    //  }
     });
      setState(() => Global.isLoading = false);
   }

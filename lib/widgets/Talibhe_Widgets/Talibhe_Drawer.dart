@@ -30,7 +30,7 @@ class _Talibhe_NavDrawerState extends State<Talibhe_NavDrawer> {
                   
                   Global.globalThalibheDetails.data.image.isNotEmpty ? ClipRRect(
                                                   borderRadius: BorderRadius.circular(45),
-                                                child : Image.network(Global.globalThalibheDetails.data.image,height: 90,fit: BoxFit.cover,
+                                                child : Image.network('https://www.tahfizulquranonline.com${Global.globalThalibheDetails.data.image}',height: 90,fit: BoxFit.cover,
                                                 width: 90,)
                                               ): Container(
                     child: Image.asset(

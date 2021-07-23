@@ -61,6 +61,11 @@ class _WalidainDashBoardState extends State<WalidainDashBoard> {
   SystemNavigator.pop();
   return true;
 }
+bool isCurrentDateInRange(DateTime startDate, DateTime endDate) {
+  
+  final currentDate = DateTime.now();
+  return currentDate.isAfter(startDate) && currentDate.isBefore(endDate);
+}
   @override
   Widget build(BuildContext context) {
      SizeConfig().init(context);
@@ -111,6 +116,7 @@ class _WalidainDashBoardState extends State<WalidainDashBoard> {
                                                   children: List.generate(
                                                       snapshot.data.data.length ??= 0,
                                                       (index) {
+                                                        snapshot.data.data.sort((a,b) => a.startTime.compareTo(b.endTime));
                                                     return AnimationConfiguration
                                                         .staggeredGrid(
                                                           position: index,                                                        

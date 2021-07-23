@@ -7,7 +7,7 @@ import 'package:Tahfizul/util/theme.dart';
 import 'package:Tahfizul/widgets/app_loader.dart';
 import 'package:Tahfizul/widgets/appbar_layout.dart';
 import 'package:dio/dio.dart';
-import 'package:downloads_path_provider/downloads_path_provider.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -94,7 +94,9 @@ class _WalidainAssignmentDetailsState extends State<WalidainAssignmentDetails> {
     Directory downloadsDirectory;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      downloadsDirectory = await DownloadsPathProvider.downloadsDirectory;
+      await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOWNLOADS).then((value){
+        downloadsDirectory =  Directory(value);
+      });
     } on PlatformException {
       print('Could not get the downloads directory');
     }
